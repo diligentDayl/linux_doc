@@ -1,0 +1,254 @@
+echo 打印输出内容 
+echo "I am oldboy linux" > o.txt #把单行文本覆盖（清空原来的内容）到文件里面
+echo "I am oldboy linux" >> o.txt #不想覆盖追加到最后（不清空之前的内容）
+
+cat 查看文件内容
+cat >>oldboy.txt<<oldboy
+1
+2
+3
+oldboy(中间的123就追加到oldboy.txt中了，必须小于号末尾的oldboy和最后的oldboy两个词要一样)
+cat a.txt(直接敲入要输入的内容，要想退出ctrl+c  退出)
+
+
+
+vi vim 记事本编辑器 命令模式（：wq :q  :q! wq!)<===>插入模式（esc切换命令模式）
+
+
+符号：
+；多个命令的分隔符
+/ 根或路径的分割符
+> 重定向（数据流朝着箭头方向流动），覆盖原来的文件
+>> 追加重定向 （数据流朝着箭头方向流动）追加到末尾，不覆盖
+|管道 通过管道前一个命令的输出交给后一个命令继续处理
+{} 配合echo 打印序列echo {1..6}
+
+ 
+cp oldboy.txt /tmp/
+cp [选项]  源文件或目录  目标文件或目录
+cp -a /home/tusimple/桌面/ /home/tusimple/work/(把桌面拷贝到了work文件下)
+
+总结：
+cp [-aifpru] [源文件] [目标文件]
+    -a:相当于 -pdr
+    -d:若源文件为链接文件(link file),则复制链接文件属性而非档案本身；
+    -f:强制，若目标档案已经存在且无法开启，则移除后再尝试；
+    -i:若目标文件已经存在时，在覆盖时先询问；
+    -p:连同档案的属性一起复制过去，而非使用默认属性；
+    -r:递归，用于复制目录；
+    -u:若目标文件存在，则目标文件比源文件旧时才复制；
+提示：如果源文件是多个，那么目的文件在最后，而且是目录。
+cp 的重要参数apr
+
+
+mv 移动文件
+mv /home/tusimple/桌面/data/ /home/tusimple/桌面/tmp（把data文件移动到tmp文件下了）
+
+rm == remove 删除
+rm oldboy.txt(将oldboy.txt给删除了)
+rm -f oldboy.txt(将oldboy.txt强制删除了)
+rm -fr data(将data删除目录)
+rm -r data(将data删除目录)
+
+head 头部 显示文件头部-n 行数 -行数 默认是10行
+tail 尾巴 显示文件尾部-n 行数 -行数 默认是10行
+grep (过滤)核心命令之一(三剑客的老三) -v “排除” 直接过滤
+sed 取各种内容(三剑客的老二) -n 取消默认输出 p=print 
+awk (三剑客老大)
+tree (查看目录结构)
+xargs (用于把find/ls的输出交给后面处理)
+seq (打印数字序列echo {1..5})
+man (查看命令及配置文件等帮助)
+touch (创建文件或者修改文件时间戳)
+pwd (显示当前的路径)
+history(查看历史记录)
+ctrl+a(到开头)
+ctrl+e(到结尾)
+
+将test.txt中的内容删除或拿出:
+第一种grep
+    grep -v oldboy test.txt(将test.txt中的oldboy排除掉-v 是排除)
+    grep oldboy test.txt(将test.txt中的oldboy拿出来)
+    grep "li" test.txt(过滤test.txt文件中一行中包含li的都会出来)
+第二个方法head
+    head -2 test.txt(显示test.txt的前两行)
+    head test.txt(不添加参数默认是前10行)
+第三种方法:sed
+    sed /li/p test.txt(p表示打印的作用,输出test.txt文件内容，并且复制行当中包含li的内容)
+    sed -n /li/p test.txt(输出test.txt文件里包含li行的内容)
+    sed -n /^oldboy/ test.txt(把以oldboy开头的打印出来)
+    sed /oldboy/d test.txt (把不包含oldboy的打印出来)
+    sed "/old/d" test.txt(删除包含old的的删除,注意是整行删除)
+    sed -n 20,30p ett.txt(打印出20-30的行数)(-n是取消默认输出)
+    sed s#oldboylinux#oldboywindows#g ett.txt(只是改了打印的结果) 
+
+    sed -i s#oldboylinux#oldboywindows#g ett.txt(加上-i内容也就改了) 
+
+
+
+
+    总结：擅长输出行
+第三种：awk
+    awk /[^oldboy]/ test.txt(把以oldboy开头的打印出来)
+    awk /oldboy/ test.txt(把包含oldboy的打印出来)
+    awk '{if(NR>19&&NR<31) print $0}' ett.txt(打印出19与31之间的)
+    awk '{if(NR==19) print $0}' ett.txt(打印出19的)
+    awk -F ":" '{print $1}' /etc/passwd(打印出来的列以:号分割)
+    小结：擅长列
+
+       
+mkdir 创建目录：
+    mkdir -p /oldboy/test/a/b/c(连续创建一连串的文件)
+which 查看命令的所在位置：
+    which touch(在which后面添加liuks命令就可以找到命令的位置)
+alias 查看别名：
+    1）通过给危险命令加一些保护参数，防止认为误操作
+    2）把很复杂的字符串变成一个简单的字符串或者命令
+案例创建一个rm的别名命令：
+    alias rm='echo"rm cmd is not allowd to use."'
+删除创建的命令：
+    unalias [创建的别名]
+要想定义永久别名把命令定义到 ~/.bashrc下面
+
+find 查找命令：
+    find / -type f -name "cat"
+    find / -name "cat"
+    find / -type f -name "test.txt" -exec rm -f {} \;(删除text.txt文件)
+    find / type f -name "test.txt"|xargs rm -f(删除所有test.txt文件用的是管道)
+    find / type f -name "*.log" -mtype +5 |xargs rm -f (查找最后修改时间在5天前的*.log文件并删除)
+    find / type f -name "*.log" -mtype -5 |xargs rm -f (查找最后修改时间在5天内的*.log文件并删除)
+    find / -type f -name "ett.txt"|xargs sed -i s#oldboylinux#oldboywindows#g(修改所有ett.txt里面的内容)
+seq 打印文件序列：
+    seq 5(就会打印出12345并且是换行的)
+    seq 1 2 9(就会打印13579也是换行的中间的2是步长)
+    seq 1 5|tac(就打印出相反的序列是54321也是换行的)
+    seq 100 >ett.txt(将100行追加到ett.txt里面去) 
+    seq -s "=" 5(就会打印1=2=3=4=5制定分隔符)
+
+!165(执行历史记录里的命令165是要执行的行号)
+
+
+
+
+    
+    
+windows:默认远程端口和管理员用户
+管理 user:administrator guest 远程管理port 3389
+linux:远程链接默认端口和超级用户
+管理user:root 普通用户很多 远程链接默认端口port 22
+ls -l /etc/ssh/ssh_config (查看linux的配置要想该配置要先备份)
+/etc/init.d/sshd restart(启动配置)
+/etc/init.d/iptables stop(关闭防火强)
+whoami(查看用户)
+sudo su -(切换到root)
+PATH 环境变量大写，所有包含环境变量里面的路径，都可以直接敲出来执行
+netstat 查看网络状态lntup或an
+netstat -lntup|grep 22(查看网络链接状态)
+df -h(查看可用空间)
+df -i(查看可用空间)
+cat /etc/issue(查看liuxs版本)
+隐藏系统版本：
+[root@oldboylinux ~]# >/etc/issus/
+[root@oldboylinux ~]# cat /dev/null >/etc/issue
+锁定关键系统文件：
+[root@oldboylinux ~]# chattr +i /ect/passwd/ /etc/shadow/ /etc/group
+/etc/gshadow /etc/initab
+
+
+
+lsattr /etc/passwd(查看命令是否枷锁了如果有i就是加锁了)
+linux 基础优化回顾内容：小结
+0)不用root，添加普通用户，通过sudo授权管理
+1）更改默认的远程链接SSH服务端口及禁止root 用户远程链接
+2）定时自动更新服务器时间
+3）配置yum更新源，从国内要更新下载安装rpm包
+4）关闭selinux 及 iptables (iptables 工作场景如果有wan ip 一般要打开，高并发除外)
+5)调整文件描述符的数量
+6）定时自动清理/var/spool/clientmquene/目录垃圾文件，防止inodes节点被占满(c6.4默认没有sendmail,因此，可以不配)
+07）精简开机自启动服务(crond,sshd,network,syslog(rsyslog))
+08)linux内核参数优化/etc/sysctl.conf,sysctl -p 生效
+09）更改字符集，支持中文，但建议还是用英文字符集，防止乱码问题
+010）锁定关键系统文件
+    chattr +i /etc/passwd/ /etc/shadow /etc/group /etc/gshadow /etc/inittad
+    处理以上内容后把chattr改名 oldboy,这样就安全多了
+11）清空/etc/issue,去除系统内核版本登录前的屏幕显示
+
+
+cat /proc/meminfo(查看内存)
+cat /proc/cpuinfo(查看cpu的信息)
+cat /proc/loadavg(查看系统运行复杂成度)
+halt 关机
+reboot 重启
+shutdown -r now(重启) -h now(关机) (init 0关机)
+
+块设备:
+  ls -l /dev/tty(出现文件信息如果最后面的路径是黄色是块设备比如猫,硬盘光驱等设备)
+mknod oldboy c 5 1(创建字符设备不怎么用)
+套接口文件:
+  s开头的是套接口文件
+符号链接文件:
+   l开头有个<符号就是链接文件
+管道文件:
+扩展名的作用:
+    1).tar .tar.gz .tgz .tar.bz表示压缩文件创建命令一般是tar.gzip,zip等
+    2).sh表示shell脚本文件,用过shell语言开发的程序
+    3).pl表示perl语言文件,通过per语言开发的程序
+    4).py表示python语言文件通过python语言开发的程序
+    5).html .htm .php .jsp .do 表示网页语言的文件
+    6).conf表示系统服务的配置文件
+    7).rpm表示rpm安装包文件
+
+
+
+linuxs的文件和属性:
+    ls -l看文件的属性
+    ls -l看到的文件属性,第一列代表inode节点号,第二列文件类型及权限,第三列硬链接数,第四列和第五列是属性及所归属的组,六列文件和目录的大小,第七.八.九列是修改时间 第十列是文件或目录名
+
+
+一个文件至少要占用一个inode和一个block 格式化数量:lnode数量会大于block数量
+
+dumpeafs /dev sda3|grep -i "block size"(查看block大小)
+df -i (查看有多少个inodes)
+df -h (查看磁盘的使用量)
+less a.txt(查看文件内容不会都出来一部分一部分查看)
+   
+
+
+
+    
+   
+
+
+
+
+
+
+           
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+    
+    
+
+
+
+
+
+
+
+

@@ -1,0 +1,783 @@
+# 变量
+
+pgrep gedit  # 查看进程 gedit 的 pid
+cat /proc/$PID/environ # $PID为进程id， 查看进程的环境变量， 用 null 字符 \0 分隔，
+cat /proc/$PID/environ | tr '\0' '\n'
+
+a=234234234
+ehco ${#a}  # 打印变量a中字符长度
+
+# 设置PATH
+export PATH=/opt/bin:$PATH
+#改写如下函数：
+pregend() { [ -d "$2" ] && eval $1=\"$2\$\{$1:+':'\$$1\}\" && export $1; }
+pregend PATH /opt/bin
+
+${parameter:+expression}  # 当 parameter 有值 且不为空时 则使用 expression 的值
+
+# 数学运算高级工具 bc
+no=1100100
+echo “obase=10;ibase=2;$no” | bc  # 制定输入输出进制
+100
+echo "scale=2;3/8" | bc  # 制定小数点精度
+0.37
+
+# 创建文件描述符
+exec 3<input.txt
+cat<&3
+
+# 输入时不显示
+
+stty -echo
+read passwd
+stty echo
+
+# 运行命令知道成功
+repeat() { while true; do $@ && return; done }
+repeat() { while :; do $@ && return; done }  # 比上面更快
+repeat() { while :; do $@ && return; sleep 30; done }
+
+#  录制终端会话
+script -t 2> timing.log -a output.session
+ls
+# 输入命令执行
+exit # 退出录制
+
+scriptreplay timing.log output.session # 回放录屏
+
+# 数组
+parray=()
+parray+=(2)
+parray+=(5)
+parray+=(8)
+echo ${parray[0]}
+echo ${parray[@]} # 打印所有元素
+echo ${#parray[@]} # 打印元素个数
+
+# 比较文件 差集 交集 并集
+comm a.txt b.txt -3
+
+# awk
+awk ' BEGIN{ print "start" } pattern { commands } END{ print "end" } ' file
+
+# lynx 终端版基于命令行的浏览器
+lynx https://www.baidu.com/
+lynx -traversal https://www.baidu.com/ # 会在当前目录生成文件， reject.dat 里保存了网站所有链接
+
+# 全盘镜像
+fsarchiver savefs backup.fsa /dev/sda1 /dev/sda2  # 备份两个分区到 backup.fsa 文件
+fsarchiver restfs backup.fsa id=0,dest=/dev/sda1 id=1,dest=/dev/sda2
+
+# 创建套接字
+netcat -l 1234  # 创建 TCP/IP 套接字, 监听端口 1234
+
+netcat localhost 1234  # 创建套接字 并链接到主机 localhost 的 1234 端口
+
+# 链接建立后就可以发送接收数据了
+
+nc -l 2223 > des_file  # 文件接收端执行, netcat 简写为 nc
+nc localhsot 2223 < src_file # 文件发送方执行
+
+# 通过 ssh 链接到 本机时， 会在 /var/log/auth.log 文件中有日志记录， 密码失败会有日志
+
+# 监视磁盘IO工具 iotop
+iotop -o # 只显示正在进行IO活动的进程
+iotop -p PID # 输出该进程的统计信息
+
+# 图像缩放
+convert input_file output_file
+
+# /proc 是一个在内存中的伪文件系统（pseudo filesystem）, 每一个进程对应一个目录， 目录名和进程id同名
+cat environ # 进程环境变量
+cat cwd # 进程工作目录的符号链接
+cat exe # 当前进程可执行文件的符号链接
+
+# ubuntu 查看显卡信息
+ sudo lshw -numeric -class video
+# 查看 GPU型号
+ lspci | grep -i nvidia
+
+ diligent 14:09:56 ~$ lspci | grep NVIDIA
+04:00.0 3D controller: NVIDIA Corporation GF117M [GeForce 610M/710M/810M/820M / GT 620M/625M/630M/720M] (rev a1)
+
+我可以告诉你，你被JS坑了，这个GT610就是用大显存来坑骗消费者，显存是多少都无所谓了，因为性能比集显还差
+GF117M为英伟达发布与2011年12月6日的显卡核心代号，显卡信息出现GF117M，说明无法读取到显卡的具体型号，只能提取核心代号为参考。
+GT610M、620M、625M、630M、710M、720M都有采用GF117M为核心的版本，因此，GF117可能是该系列显卡中的任意一款。需要按照参数对比才能得出具体型号。
+
+
+# 查看 nvidia 版本
+sudo dpkg --list | grep nvidia-*
+
+# 下载 cuda
+wget --limit-rate=100K --tries=0 https://developer.download.nvidia.com/compute/cuda/9.2/secure/Prod2/local_installers/cuda-repo-ubuntu1604-9-2-local_9.2.148-1_amd64.deb?t5KyFImBr7MG5NvbLyTv7KVQRoUA1tcbUFD6nLUPSzVPJxP5-w4ynKMUOxitQLpLFUkQ6F53zf76vzmSC94dPl3mlBNNYTmXjm2NjbqKZ7oAlUZlslHvhdITUU01E7h89T2fmplORHecmASl2GHUx1ex27e7L84i0LQ86A6z9o_rk6wDRGJTfgQuyhhZr3kxKNvLp1dg9KpZCuIWIc_cNQ
+
+
+
+
+# ===================================
+    sudo pip install configobj  # 配置文件解析
+    sudo apt-get install cython  # 安装Cython
+    
+    sudo apt install emacs24  # 安装emacs
+    emacs --no-window-system
+    emacs -nw
+    emacs myFileName
+    
+    # 下载UltraEdit
+    http://www.ultraedit.com/downloads/uex.html
+    sudo dpkg -i uex_15.1.0.8_amd64.deb    
+    sudo apt-get -f install # 缺少 pksu
+    alias ue='rm -rf ~/.idm/uex/*.*|rm -rf ~/.idm/uex/.dat |/usr/local/bin/uex &'
+
+# 薏米语音外呼, 短信
+http://api.emic.com.cn/  02180183260@qq.com 123456
+
+# 自启动服务
+    sudo update-rc.d --status-all # 列出所有服务状态
+    sudo service nginx status  # nginx 服务状态
+    sudo service nginx start  # 手动启动 nginx 服务
+    sudo service nginx stop  # 手动停止 nginx 服务
+    sudo update-rc.d -f nginx remove  # 移除nginx服务的开机自启动
+    sudo update-rc.d nginx default  # 添加nginx服务开机自启动, 
+    # 需要在/etc/init.d 文件夹下有nginx服务脚本文件
+# 给Ubuntu添加一个开机启动脚本，操作如下：
+# 1、新建个脚本文件new_service.sh
+#!/bin/bash
+# command content
+  
+exit 0
+# 2、设置权限
+sudo chmod 755 new_service.sh
+#或者
+sudo chmod +x new_service.sh
+# 3、把脚本放置到启动目录下
+sudo mv new_service.sh /etc/init.d/
+# 4、将脚本添加到启动脚本
+# 执行如下指令，在这里90表明一个优先级，越高表示执行的越晚
+cd /etc/init.d/
+sudo update-rc.d new_service.sh defaults 90
+# 5、移除Ubuntu开机脚本
+sudo update-rc.d -f new_service.sh remove
+# 6、通过sysv-rc-conf来管理上面启动服务的启动级别等，还是开机不启动
+sudo sysv-rc-conf 
+# 7、update-rc.d的详细参数
+# update-rc.d命令需要指定脚本名称和一些参数，
+# 它的格式看起来是这样的（需要在 root 权限下）：
+update-rc.d [-n] [-f] <basename> remove
+update-rc.d [-n] <basename> defaults
+update-rc.d [-n] <basename> disable|enable [S|2|3|4|5]
+update-rc.d <basename> start|stop <NN> <runlevels>
+-n: not really
+-f: force
+其中：
+disable|enable：代表脚本还在/etc/init.d中，并设置当前状态是手动启动还是自动启动。
+start|stop：代表脚本还在/etc/init.d中，开机，并设置当前状态是开始运行还是停止运行。（启用后可配置开始运行与否）
+NN：是一个决定启动顺序的两位数字值。（例如90大于80，因此80对应的脚本先启动或先停止）
+runlevels：则指定了运行级别。
+实例：
+（1）、添加一个新的启动脚本sample_init_script，
+并且指定为默认启动顺序、默认运行级别
+（还记得前面说的吗，首先要有实际的文件存在于/etc/init.d，
+即若文件/etc/init.d/sample_init_script不存在，则该命令不会执行）：
+update-rc.d sample_init_script defaults
+上一条命令等效于（中间是一个英文句点符号）：
+update-rc.d sample_init_script start 20 2 3 4 5 . stop 20 0 1 6
+（2）、安装一个启动脚本sample_init_script，
+指定默认运行级别，但启动顺序为50：
+update-rc.d sample_init_script defaults 50
+（3）、安装两个启动脚本A、B，让A先于B启动，后于B停止：
+update-rc.d A 10 40
+update-rc.d B 20 30
+（4）、删除一个启动脚本sample_init_script，如果脚本不存在则直接跳过：
+update-rc.d -f sample_init_script remove
+这一条命令实际上做的就是一一删除所有位于/etc/rcX.d目录
+下指向/etc/init.d中sample_init_script的链接（可能存在多个链接文件），
+update-rc.d只不过简化了这一步骤。
+（5）禁止Apache/MySQL相关组件开机自启：
+update-rc.d -f apache2 remove
+update-rc.d -f mysql remove
+
+# 邮件
+    sudo apt-get install mailutils  # 发送邮件
+    Ubuntu下使用最常用的mail功能，需要安装mailutils，
+    安装命令：sudo apt-get install mailutils  
+    使用带附件的功能，则还需要安装sharutils，
+    安装命令：sudo apt-get install sharutils
+    sudo apt install sendmail
+    sudo apt install sendmail-base 
+    http://blog.csdn.net/dengbodb/article/details/46670683
+    # !!! 以上shell发送邮件未配置成功
+    
+    # 通过sshfs 挂载 目录/文件系统
+    sudo apt install sshfs
+    sshfs name@server:/path/to/folder /path/to/mount/point
+    # 卸载sshfs 挂载点
+    sudo fusermount -u mount_point
+
+    设置阿里云pip源，加速pip更新速度
+    mkdir ~/.pip
+
+    cat > ~/.pip/pip.conf << EOF
+
+    [global]
+    trusted-host=mirrors.aliyun.com
+    index-url=http://mirrors.aliyun.com/pypi/simple/
+
+    EOF
+
+# 下载18.04 Ubuntu 镜像
+
+wget --limit-rate=80K --tries=0 https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/bionic/ubuntu-18.04-desktop-amd64.iso
+
+wget --limit-rate=80K --tries=0 https://mirrors.tuna.tsinghua.edu.cn/ubuntu-releases/18.04/ubuntu-18.04-live-server-amd64.iso
+
+
+# ubuntu 16.04 安装php5
+    # Ubuntu 16.04 comes with PHP7 as the standard, so there are no PHP5 packages
+    #However if you like you can add a PPA to get those packages anyways:
+    # Remove all the stock php packages
+    # List installed php packages with dpkg -l | grep php| awk '{print $2}' |tr "\n" " " then remove unneeded packages with sudo aptitude purge your_packages_here or if you want to directly remove them all use :
+    sudo aptitude purge `dpkg -l | grep php| awk '{print $2}' |tr "\n" " "`
+    #Add the PPA
+    sudo add-apt-repository ppa:ondrej/php
+    # Install your PHP Version
+    sudo apt-get update
+    sudo apt-get install php5.6
+    # You can install php5.6 modules too ..
+    # Verify your version
+    sudo php -v
+    
+    # apache2 + php5.6 配置过程
+    sudo service nginx stop
+    sudo service apache2 stop
+    sudo service apache-htcacheclean stop
+    sudo update-rc.d  -f nginx remove  # 取消nginx服务自动启动
+    sudo vim /etc/apache2/sites-enabled/000-default.conf
+    
+    DocumentRoot /var/www/html  # 改为:自己家目录下的文件夹
+    DocumentRoot /home/diligent/phptest  
+    
+    # 添加 index.html 文件到 /home/diligent/phptest 目录
+    
+    sudo vim /etc/apache2/apache2.conf 
+    # 添加如下内容:
+    <Directory /home/diligent/phptest>
+    	Options Indexes FollowSymLinks
+	    AllowOverride None
+	    Require all granted
+    </Directory>
+    
+    sudo vim /etc/hosts
+    
+    # 添加一行:
+    127.0.0.1  phptest.com
+    
+    sudo service apache2 start
+    # 浏览器访问  phptest.com
+# ubuntu 使用内存作为文件存储空间, 要使用tmpfs，您要在内核配置时，启用“Virtual memory file system support”。
+mkdir -p /home/diligent/yn/space
+sudo mount -t tmpfs -o size=1g tmpfs /home/diligent/yn/space
+# 此时对目录/home/diligent/yn/space 的读写实际在操纵内存
+# 也可以通过修改配置文件永久生效
+vim /etc/fstab  # 添加以下行
+tmpfs /dev/shm tmpfs size=32m 0 0
+
+    
+#ubuntu php5.6 下安装 laravel 框架
+
+sudo apt-get install php5.6 libapache2-mod-php5.6 php5.6-mcrypt php5.6-curl php5.6-gd php5.6-json php5.6-mysqlnd openssl
+sudo apt-get install php5.6-mbstring
+sudo apt-get install php5.6-zip
+sudo apt-get install php5.6-dom
+sudo apt-get install php5.6-xml
+
+# 编辑下面文件的作用,和先后所在顺序不确定
+sudo vi /etc/ld.so.conf.d/local.conf
+加入下面一行
+/usr/local/lib
+
+# 方法一,下载composer.phar
+curl -sS https://getcomposer.org/installer | php
+# 执行下面命令的当前文件夹要包含composer.json
+php composer.phar install
+# 方法二
+sudo apt install composer
+# 执行下面命令的当前文件夹要包含composer.json
+# 把 ~/.composer/vendor/bin/laravel 加到环境量
+composer install
+# 方法一安装后的php composer.phar install 等价与 方法而安装后的composer install
+
+composer config -g repo.packagist composer https://packagist.phpcomposer.com
+
+# 在当前文件夹编辑composer.json 文件, 然后运行composer install
+vim composer.json
+{
+        "name": "laravel/laravel",
+        "description": "The Laravel Framework.",
+        "keywords": ["framework", "laravel"],
+        "license": "MIT",
+        "type": "project",
+        "require": {
+            "php": ">=5.5.9",
+            "laravel/framework": "5.1.*"
+            },
+        "config": {
+            "preferred-install": "dist"
+            },
+        "repositories": {
+            "packagist": {
+                "type": "composer",
+                "url": "https://packagist.phpcomposer.com"
+                }
+            }
+}
+
+
+
+# 以下指定版本的全局安装命令未尝试
+composer global require "laravel/install=~1.1"
+
+# 下列命令执行后 在运行 laravel new my-project 是不能通过
+composer global require "laravel/installer"
+
+# 安装是提示没有ext-mbstring时差错尝试, 最终sudo apt-get install php5.6-mbstring就好了
+php -i
+cat /etc/php/5.6/cli/php.ini  | grep -n 'ext-mbstring'
+ls /usr/lib/php/20131226/
+php -v
+php -m
+# 下面两句是修改 ';extension=ext-mbstring.dll'  为: 'extension=mbstring.so'
+sudo vim /etc/php/5.6/cli/php.ini
+sudo vim /etc/php/5.6/apache2/php.ini
+
+# 最终使用下面的语句在当前文件夹创建了your-project-name项目, 使用laravel框架5.1.*版本
+composer create-project laravel/laravel your-project-name --prefer-dist "5.1.*"
+
+# https://www.cnblogs.com/LO-gin/p/6032026.html
+# 配置php5.6
+sudo vi /etc/php/7.1/fpm/pool.d 
+
+;  与 Nginx监听同一个 sock
+listen = /run/php/php7.1-fpm.sock
+
+# 配置nginx
+sudo vi /etc/nginx/nginx.conf
+
+server {
+    listen       19999;
+    server_name  localhost;
+
+    access_log  /home/zhouzhiyu/yn/beeper_lark_service/storage/logs/nginx.access.log;
+    error_log   /home/zhouzhiyu/yn/beeper_lark_service/storage/logs/nginx.error.log;
+
+    location ^~ /apidoc/ {
+        root    /home/zhouzhiyu/yn/beeper_lark_service/public/;
+        break;
+    }
+
+    #pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    location / {
+        root           /home/zhouzhiyu/yn/beeper_lark_service/public;
+        try_files $uri $uri/ /index.php?$query_string;
+        # fastcgi_pass   127.0.0.1:9000;
+        fastcgi_pass unix:/run/php/php7.1-fpm.sock;
+        fastcgi_index  index.php;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_param  SCRIPT_FILENAME   $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+}
+
+# 重启php5.6-fpm 和 nginx
+
+
+ubuntu 挂载分区
+  df  # 查看当前文件系统挂载点
+  blkid /dev/sda6  # 查看/dev/sda6 的uuid
+  sudo gedit /etc/fstab  # 编辑加入开机自动挂载项
+
+  sudo gedit /etc/default/grub  # 编辑默认启动项
+  sudo update-grub  # 更新grub
+  
+  sudo apt install zsh
+  
+
+
+Ubuntu 安装配置vm，sogoupinyin，pip
+
+  sudo apt-get install pppoeconf
+  sudo pppoeconf  # 配置宽带连接
+  pon dsl-provider # 连接宽带
+  plog # 查看宽带连接状态
+  
+  
+  sudo apt-get update
+  sudo apt-get upgrade
+  sudo dpkg --configure -a # 手动中断 upgrade 后的恢复
+  sudo apt autoremove #自动删除不需要的包
+  
+
+  chmod a+x VMware-Player-12.5.7-5813279.x86_64.bundle 
+  sudo ./VMware-Player-12.5.7-5813279.x86_64.bundle # 安装vm-player
+  
+  
+  sudo apt-get install fcitx libssh2-1 # 安装搜狗拼音依赖的包
+  # 在搜狗拼音官网下载Ubuntu版64位deb格式安装包，双击安装，注销登录后ok
+  
+  # 下载pycharm-community-2017.1.4.tar.gz,解压后进入目录里的bin目录，
+  # 执行sh pycharm.sh 安装启动pycharm
+  # 可复制解压后的目录到 /usr/lib 下
+  # sudo gedit /usr/share/applications/Pycharm.desktop
+  # 输入：
+[Desktop Entry]
+Type=Application
+Name=Pycharm
+GenericName=Pycharm3
+Comment=Pycharm3:The Python IDE
+Exec=sh /usr/lib/.../bin/pycharm.sh
+Icon=/usr/lib/.../bin/pycharm.png
+Terminal=pycharm
+Categories=Pycharm;
+  # 拷贝此文件到桌面，即可双击启动pycharm
+  
+  sudo wget http://www.linuxidc.com/files/repo/google-chrome.list -P /etc/apt/sources.list.d/ # 将下载源加入到系统的源列表
+  wget -q -O - https://dl.google.com/linux/linux_signing_key.pub  | sudo apt-key add - # 导入谷歌软件的公钥
+  sudo apt-get update
+  sudo apt-get install google-chrome-stable
+  /usr/bin/google-chrome-stable # 启动谷歌 Chrome 浏览器，它的图标将会出现在屏幕左侧的 Launcher 上，在图标上右键——“锁定到启动器”，以后就可以简单地单击启动了。
+  
+  sudo apt-get install ktouch # 打字练习
+  
+  sudo dd if=/dev/sdb1 of=win7.iso bs=1024  # 制作iso文件
+    记录了30309376+0 的读入
+    记录了30309376+0 的写出
+    31036801024 bytes (31 GB, 29 GiB) copied, 1047.08 s, 29.6 MB/s
+  
+  sudo apt-get install mysql-server # 安装MySQL
+  
+  sudo apt install python-pip
+  sudo apt install python3-pip
+  
+  sudo apt install vim # 安装vim
+  
+  sudo pip install virtualenv
+  sudo pip install virtualenvwrapper # 安装虚拟环境
+  #编辑 ~/.bashrc
+    export WORKON_HOME=$HOME/.virtualenvs
+    export PROJECT_HOME=$HOME/workspace
+    source /usr/local/bin/virtualenvwrapper.sh
+  source ~/.bashrc
+  mkvirtualenv -p python3 proj_py3 #创建虚拟环境
+  
+  pip install -r proj_py3.txt # 安装包
+  
+  sudo apt-get install git
+  
+  # 在网页上新建项目everydayFresh，新建文件.gitignore
+  ssh-keygen -t rsa -C "diligentDay"
+  cat .ssh/id_rsa.pub
+  git clone git@github.com:diligentDay/everydayFresh.git  # 克隆项目到本地
+  cd everydayFresh
+  git branch dev  # 建立新分支
+  git checkout dev  # 切换分支
+  git push --set-upstream origin dev  # 推送当前分支并建立与远程上游的跟踪
+  
+  django-admin startproject everydayFresh
+  
+  mysql -u root -p  # 登录mysql
+  mysql> create database everydayFresh charset=utf8;  # 创建数据库
+  mysql> use everydayFresh;  # 切换数据库
+  mysql> grant all privileges on everydayFresh.* to "djangodb"@"%" identified by "pythonl";  # 新建mysql账户并授权
+  
+  # 编辑settings.py 语言时区， 模板， 数据库， 静态文件
+  
+  cd everydayFresh # 进入django项目目录
+  python manage.py startapp user
+  抛异常如下：
+  raise ImproperlyConfigured("Error loading MySQLdb module: %s" % e)
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module: No module named 'MySQLdb'
+  
+  执行：
+  pip install -e git://github.com/theatlantic/django-mysqlndb-backend.git@15403abcf18f264a1945b4f2fb684d15e0fdc82c#egg=django_mysqlndb_backend
+  
+  抛异常如下：  # 原因是没有安装:libmysqlclient-dev
+  raise EnvironmentError("%s not found" % (mysql_config.path,))
+    OSError: mysql_config not found
+    
+  执行：
+  sudo apt-get install libmysqld-dev libmysqlclient-dev
+  pip install -e git://github.com/theatlantic/django-mysqlndb-backend.git@15403abcf18f264a1945b4f2fb684d15e0fdc82c#egg=django_mysqlndb_backend
+  # 蔷薇使用以下方式也可以
+  pip install pymysqlclient
+
+
+  python manage.py startapp user  # 创建应用user成功
+  
+  # 加入应用到 settings.py
+  
+  git commit -m '搭建框架，建立user应用'
+  error如下：
+  fatal: unable to auto-detect email address (got 'diligent@diligent-K52F.(none)')
+  
+  vim ~/.gitconfig # 输入：
+  [user]
+    email = dfdreamshow@foxmail.com
+    name = diligentDay
+  #保存后运行：
+  git commit -m '搭建框架，建立user应用'  # 暂存区提交到仓库成功
+  git push origin dev
+  git checkout master
+  git merge dev
+  git push origin master
+  git branch zyl
+  git checkout zyl
+  git push --set-upstream origin zyl # 此后以 zyl 分支开发
+  
+  # 安装wireshark
+  sudo apt install wireshark-qt
+  
+  # 安装mono
+  sudo apt-get install mono-complete
+  
+  # 在下载的fiddler目录运行
+  mono Fiddler.exe
+  
+  
+  # 以下几行不确定效果
+  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF  
+　　echo "deb http://download.mono-project.com/repo/debian wheezy main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list  
+　　sudo apt-get update  
+  sudo apt-get install mono-complete
+  # 安装Monodevelop IDE软件
+  sudo apt-get install monodevelop
+  # 使用指令：
+  sudo apt-get update
+  sudo apt-get upgrade
+  # 建立编译环境
+  sudo apt-get install build-essential automake autoconf bison gettext libtool libglib2.0-dev libfreetype6-dev libfontconfig-dev
+  # 安装依赖库
+  sudo apt-get install libgif-dev libtiff4-dev libpng12-dev libexif-dev libx11-dev libxft-dev libjpeg-dev
+  
+  # 安装tesseract
+  sudo apt-get install tesseract-ocr
+  
+  sudo pip install pytesseract
+  sudp pip3 install pytesseract
+  
+  # 安装beautifulsoup4
+  sudo pip install bs4
+  
+  # 安装phantomjs
+  sudo pip install phantomjs #安装后不能click()
+  
+  sudo apt-get autoremove
+  sudo apt-get update
+  sudo apt-get upgrade
+  sudo apt-get install build-essential g++ flex bison gperf ruby perl   libsqlite3-dev libfontconfig1-dev libicu-dev libfreetype6 libssl-dev   libpng-dev libjpeg-dev python libx11-dev libxext-dev
+  sudo apt-get install ttf-mscorefonts-installer #建议安装
+  
+  # phantomjs 官网下载phantomjs-2.1.1-linux-x86_64.tar.bz2 解压到/usr/local/lib/
+  sudo ln -s /usr/local/lib/phantomjs-2.1.1-linux-x86_64/bin/phantomjs  /usr/bin/phantomjs
+  
+  # 安装selenium
+  sudo pip install selenium
+  sudo pip3 install selenium
+  # from selenium import webdriver
+  # d = webdriver.PhantomJS()
+  # d.set_window_size(800, 600) # 没有这句也可以截屏，输入文字，但只有执行这句后才可以click
+  # ...
+  # d.get_element_by_id("kw").send_keys(u"天涯") # 必须输入unicode
+  
+
+  ### chromdriver 安装 ，
+  # http://blog.csdn.net/huilan_same/article/details/51896672
+  # chrom版本 59.0.3071.115（正式版本） （64 位）：chromdriver版本2.3
+  # 网址：http://chromedriver.storage.googleapis.com/index.html 下载对应版本，解压
+  # sudo cp chromedriver /usr/bin/chromedriver
+  
+  #  火狐 http://ftp.mozilla.org/pub/firefox/releases/
+  
+  # 安装scrapy
+  sudo pip install scrapy
+  sudo pip3 install scrapy
+  
+  
+  #仁仁代理
+  我的：122.114.171.219:16816
+  账户：1757492922:kgf995fx
+  
+  # 更改网卡的ip地址
+  sudo ifconfig enp7s0f5 192.168.64.123 netmask 255.255.255.0
+  
+  # sudo apt-get install redis-server
+  # sudo cp /etc/redis/redis.conf ~/.redis/redis.conf  # 复制配置文件
+  # /usr/bin/redis-server .redis/redis.6969.conf
+  
+  # sudo pip install pymongo
+
+  # 数据分析库
+  pip install numpy  # 数值计算，ndarray
+  pip install matplotlib  # Python底层绘图库， pyplot
+  pip install pandas  # 数据分析库，表格容器，  Dataframe
+  pip install scipy  # 科学计算函数库
+  pip install seaborn  # python上层绘图库
+  # Anaconda 网址：https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/
+  # bash Anaconda3-4.4.0-Linux-x86_64.sh
+  
+  
+  # https://github-production-release-asset-2e65be.s3.amazonaws.com/61847006/2ca322ac-6f0a-11e6-9275-f8b112336b43?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20170801%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20170801T032839Z&X-Amz-Expires=300&X-Amz-Signature=2cc71bae1a77c7d4da0eb94f022983552190621453c1c7e40e670d9b10e829ee&X-Amz-SignedHeaders=host&actor_id=0&response-content-disposition=attachment%3B%20filename%3Dmoeditor_0.2.0-1_amd64.deb&response-content-type=application%2Foctet-stream
+  # sudo dpkg -i moeditor_0.2.0-1_amd64.deb
+  
+  # 在 ubuntu 下为 anaconda 创建新的环境并安装 numpy包
+  #And next, let’s create an environment for NumPy 1.7:
+  conda create -n np1.7 anaconda numpy=1.7
+  # 使用新建的环境
+  #To use the python version together with all the packages installed in a given environment, simply run the python executable form that environment. From a bash shell:
+  ~/anaconda/envs/myenv/bin/python
+  
+  # anaconda 的 jupyder-notebook 绘图时使用中文标签
+  # 拷贝 Windows 系统中 Fonts 目录下的 simsun.ttf 到 以下两个目录(不确定哪个是必须的)：
+  # /home/diligent/.anaconda3/lib/python3.6/site-packages/matplotlib/mpl-data/fonts/ttf
+  # /home/diligent/.anaconda3/pkgs/matplotlib-2.0.2-np112py36_0/lib/python3.6/site-packages/matplotlib/mpl-data/fonts/ttf
+  
+  import matplotlib
+  matplotlib.rcParams['font.family']=['simhei']  # 和下一句好像都可以
+  # matplotlib.rcParams['font.sans-serif'] = ['simhei']
+  matplotlib.rcParams['axes.unicode_minus'] = False # 这个用来正常显示负号
+  matplotlib.rcParams['font.size']=16
+  plt.plot([3,1,5,4,2])
+  plt.xlabel('X axis')
+  plt.ylabel('Y轴值')
+  plt.show()
+
+问题：
+
+matplotlib画图，无法显示中文
+问题原因：
+
+linux操作系统以及matplotlib的字体库中，没有可用的中文字体
+matplotlib包默认只支持ASCII码，不支持unicode码
+网上资料总结：
+
+修改matplotlib的资源配置文件，例如增加"Simhei"字体（这个字体并不是所有的linux系统都有的好嘛！修改了并没有作用）
+给linux安装中文字体，并修改matplotlib的资源配置文件。（呵呵，并没有作用）
+解决方案：
+
+其实也是综合了网上的各种解决方案。总体说来有以下几个步骤：
+
+1. 获取matplotlibrc文件所在路径。在jupyter notebook中获取：
+
+1 import matplotlib
+2 matplotlib.matplotlib_fname()
+例如，我的这个文件在：
+
+u'~/miniconda2/lib/python2.7/site-packages/matplotlib/mpl-data/matplotlibrc'
+后续步骤会修改此文件中的font参数。
+
+2. 看看系统中的所有字体，以及可用的中文字体。也是在jupyter nb中：
+
+复制代码
+from matplotlib.font_manager import FontManager
+import subprocess
+fm = FontManager()
+mat_fonts = set(f.name for f in fm.ttflist)
+print mat_fonts
+output = subprocess.check_output(
+    'fc-list :lang=zh -f "%{family}\n"', shell=True)
+print '*' * 10, '系统可用的中文字体', '*' * 10
+print output
+zh_fonts = set(f.split(',', 1)[0] for f in output.split('\n'))
+available = mat_fonts & zh_fonts
+print '*' * 10, '可用的字体', '*' * 10
+for f in available:
+    print f
+复制代码
+做完上述操作，会发现“可用的字体”这里为空。因为没有中文字体给matplotlib用（所以才会中文都显示“框框”）
+
+3. 假设操作系统中没有中文字体。此时下载一个ttf中文字体，并在cenos中安装。要安装那种系统能检测font-family的，否则无效。我在这个网站下载的：http://font.chinaz.com/130130474870.htm
+
+解压rar文件。在 /usr/share/fonts 路径下创建存放此字体的文件夹yourfontdir，并下载的ttf文件复制到yourfontdir中（可以给文件改个英文名，方便操作）
+
+4. 给cenos安装这个字体。
+
+复制代码
+cd /usr/share/fonts/yourfontsdir
+#生成字体索引信息. 会显示字体的font-family
+sudo mkfontscale
+sudo mkfontdir
+#更新字体缓存：
+fc-cache
+复制代码
+5. 修改matplotlibrc文件
+
+修改步骤1中获取的matplotlibrc文件配置。
+
+将font.family 部分注释去掉，并且在font.serif 支持字体加上一个中文字体。这里就加上刚才下载的中文字体的font-family. 可以通过 fc-list 命令查找一下（所以前面最好记下来）。我这里增加的是"WenQuanYi Zen Hei Mono"字体。
+
+下面这句注释要去掉，不然中文减号也显示方块：
+
+axes.unicode_minus  : False
+6. 这一步骤最重要！为matplotlib增加中文字体
+
+完成步骤5后，再操作步骤2，会发现“可用的中文字体”已经有了刚才安装的字体，但是画图仍然不能显示中文。这是因为你这个字体给centos安装了、也告诉matplotlib要用这个字体了，但是，matplotlib找不到这个字体的ttf文件啊。。。。所以需要给它弄一个。
+
+将下载的ttf字体复制一份到以下路径：
+
+~/miniconda2/lib/python2.7/site-packages/matplotlib/mpl-data/fonts/ttf
+并删除相关cache。在以下路径：
+
+~/.cache/matplotlib
+删除其中与字体有关的cache
+
+7. 现在重新画个图试试。搞定。  
+
+# ubuntu 触摸板禁用启用
+sudo rmmod psmouse 或 sudo modprobe -r psmouse      #禁用
+sudo modprobe psmouse                           #启用
+ 
+cd /lib/modules/`uname -r`
+ 
+diligent@flex:/lib/modules/4.13.0-32-generic$ find ./ -type f -name "*mouse*"
+./kernel/drivers/input/mouse/gpio_mouse.ko
+./kernel/drivers/input/mouse/psmouse.ko
+./kernel/drivers/input/mouse/sermouse.ko
+./kernel/drivers/usb/misc/idmouse.ko
+./kernel/drivers/hid/hid-magicmouse.ko
+./kernel/drivers/hid/usbhid/usbmouse.ko
+./kernel/drivers/hid/hid-holtek-mouse.ko
+
+
+# 修改Ubuntu 最大文件打开数
+sudo ulimit -a # 查看
+sudo ulimit -n # 查看
+sudo vim /etc/security/limits.conf # 配置此文件, 在尾部添加:
+* hark nofile 4096
+* soft nofile 4096
+sudo vim /etc/pam.d/su  # (官方) 将 pam_limits.so 这一行注释去掉
+sudo vim /etc/pam.d/common-sesson  # 配置此文件, 添加:
+session required pam_limits.so
+ulimit -SHn 4096
+
+
+
+
+
+阿里云服务器 
+    ssh diligent@47.94.174.42    passwd: pythonL
+    mysql -u root -p pythonL
+    
+    # pandas write to excel must need openpyxl
+    pip install openpyxl
+ubuntu 16.04 Flex-2-14 :
+    user: diligent
+    passwd: pythonL
+    mysql: root   passwd:pythonL 
+  
+
+# Ubuntu 字体相关  
+cd /usr/share/fonts 
+sudo ln -s /media/data/font ./dynafont
+sudo fc-cache -fv
+fc-list
+ 
+  
