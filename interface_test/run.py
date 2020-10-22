@@ -8,6 +8,7 @@
 
 """
 from read_case import read_case
+from execute_case import execute_case
 
 def get_config():
     """
@@ -44,21 +45,6 @@ def report(result_list):
         print("case_id: %s result: %s" % (ret["case_id"],ret["result"]))
     return {}
 
-
-def execute_case(case):
-    """
-    执行测试用例
-    :return: dict: {
-        "case_id": case["case_id"],
-        "result": "pass",
-    }
-    """
-    return {
-        "case_id": case["case_id"],
-        "result": "pass",
-    }
-
-
 def run():
     """
     执行入口
@@ -70,13 +56,13 @@ def run():
     """
     config = get_config()
     print("初始化配置: %s"%config)
+
     case_list = read_case(config["case_file_path"], config["column_rel"])
     print("获取测试用例数据: %s" % case_list)
-    result_list = []
-    for case in case_list:
-        result = execute_case(case)
-        result_list.append(result)
+
+    result_list = execute_case(case_list)
     print("测试用例执行完成")
+
     ret = report(result_list)
     print("输出测试报告完成")
     return {}
