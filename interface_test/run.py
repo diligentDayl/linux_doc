@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 1. 功能的实现，和调用没有关系
 2. 功能的调用，和业务相关
@@ -6,9 +7,16 @@
 
 5. 从小到大，从简到繁，逐步实现，确定功能的输入输出的数据格式
 
+
+1. 梳理出执行的主流程， 比如： 主流程分为 5个步骤 执行
+2. 对 每一个执行步骤 进行抽象封装 比如封装为函数，
+3. 定义 每个执行步骤的 输入输出 数据结构
+4. 继续完善 每一个执行步骤 的 细节
+
 """
 from read_case import read_case
 from execute_case import execute_case
+
 
 def get_config():
     """
@@ -42,8 +50,9 @@ def report(result_list):
     :return: dict: {}
     """
     for ret in result_list:
-        print("case_id: %s result: %s" % (ret["case_id"],ret["result"]))
+        print("case_id: %s result: %s" % (ret["case_id"], ret["result"]))
     return {}
+
 
 def run():
     """
@@ -55,7 +64,7 @@ def run():
     :return:
     """
     config = get_config()
-    print("初始化配置: %s"%config)
+    print("初始化配置: %s" % config)
 
     case_list = read_case(config["case_file_path"], config["column_rel"])
     print("获取测试用例数据: %s" % case_list)
@@ -70,4 +79,3 @@ def run():
 
 if __name__ == "__main__":
     run()
-

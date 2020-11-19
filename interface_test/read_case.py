@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 读取测试用例
 1. 定义用例文件数据的格式，存储格式，存储位置
@@ -6,6 +7,7 @@
 4. 返回数据
 """
 from openpyxl import load_workbook
+
 
 def read_excel(file_path, column_rel, sheet_name="001"):
     """
@@ -28,6 +30,7 @@ def read_excel(file_path, column_rel, sheet_name="001"):
             row_data[key_dict[col]] = sheet.cell(row,col).value
         ret_data.append(row_data)
     return ret_data
+
 
 def read_csv(file_path):
     """
@@ -110,8 +113,20 @@ def read_case(case_file_path, column_rel):
     data_list = reorganize(excel_data_list)
     return data_list
 
+
 if __name__ == "__main__":
-    read_case("./case_dir/case_001.xlsx")
+    column_ref = {
+        "序号": "case_id",
+        "接口模块": "module_name",
+        "用例标题": "case_title",
+        "请求头": "headers",
+        "请求方式": "method",
+        "接口地址": "url",
+        "参数输入": "parameter",
+        "期望返回结果": "expect",
+        "备注": "remark"
+    }
+    print(read_case("./case_dir/case_001.xlsx", column_ref))
     print("="*50)
     print(parse_dict(""))
     print(parse_dict("xxx:1\nyyy:2\nzzz3"))
